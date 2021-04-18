@@ -6,8 +6,6 @@ from utils.tools import (
     generate_email,
     generate_name,
     generate_password,
-    # generate_post_name,
-    # generate_post_description,
 )
 
 
@@ -82,7 +80,8 @@ class User:
             headers=self.headers
         )
         data = json.loads(response.text)
-        for post in data: posts.append(post['uuid'])
+        for post in data:
+            posts.append(post['uuid'])
         return posts
 
     def like_post(self) -> None:
