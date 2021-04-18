@@ -9,6 +9,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = (
+            'created_by',
             'uuid',
             'name',
             'description',
