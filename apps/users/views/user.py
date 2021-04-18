@@ -7,7 +7,8 @@ from django.db.models.functions import TruncDay, TruncMonth, TruncYear
 
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from users.models import User
 from users.serializers import (
@@ -25,7 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         serializer_class = UserShortSerializer
 
-        if self.action == 'create':
+        if self.action == 'register':
             serializer_class = UserCreateSerializer
         elif self.action == 'retrieve':
             serializer_class = UserRetrieveSerializer
@@ -33,6 +34,15 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer_class = UserUpdateSerializer
 
         return serializer_class
+
+    @action(methods=['POST'], detail=False, url_path='register',
+            permission_classes=[AllowAny])
+    def register(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=201, headers=headers)
 
     def analytics(self, request, *args, **kwargs):
         instance: User = self.request.user
